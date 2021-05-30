@@ -7,7 +7,8 @@
     "build": "npx tsc",
     "start": "npm run build && node ./build/.",
     "dev": "npx nodemon ./src/index.ts",
-    "format": "npx prettier --write ."
+    "format": "npx prettier --write .",
+    "lint": "npx eslint ./src"
   },
   "keywords": [],
   "author": "",
