@@ -14,7 +14,7 @@ router.get("/images", async (req: Request, res: Response) => {
     img = await (isCached
       ? processor.loadFromCache()
       : processor.load(Number(width), Number(height)));
-  } catch (e) {
+  } catch (err: unknown) {
     res.status(404).send("Error: Image not found");
     return;
   }
