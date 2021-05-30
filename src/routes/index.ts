@@ -3,6 +3,6 @@ import imageRouter from "./api/image";
 
 const router = express.Router();
 
-router.use("/", imageRouter);
+router.use("/api", imageRouter);
 
 export default router;
