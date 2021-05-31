@@ -1,14 +1,16 @@
 import ImageProcessor from "../processor";
-import rimraf from "rimraf";
 import path from "path";
+import del from "del";
 
 const processor = new ImageProcessor("santamonica");
 
 describe("Test ImageProcessor", () => {
   beforeEach(() => {
-    rimraf(path.join(__dirname, "../../assets/thumb/*.jpg"), () => {
-      console.log("Cache removed");
-    });
+    clearThumbs();
+  });
+
+  afterAll(() => {
+    clearThumbs();
   });
 
   describe("Test cache", () => {
@@ -21,6 +23,7 @@ describe("Test ImageProcessor", () => {
       const isCached = await processor.isCached();
       expect(isCached).toBeTrue();
     });
+    // the following test sometimes fails randomly, probably due to how fsPromises works, please try a couple times if it fails
     it("Should return from cache", async () => {
       await processor.cache(Buffer.from(""));
       const img = await processor.loadFromCache();
@@ -36,3 +39,7 @@ describe("Test ImageProcessor", () => {
     });
   });
 });
+
+async function clearThumbs() {
+  await del([path.join(__dirname, "../../assets/thumb/*.jpg")]);
+}
