@@ -1,23 +1,28 @@
 import path from "path";
 import { promises as fsPromises } from "fs";
 import sharp from "sharp";
+import del from "del";
 
 export default class ImageProcessor {
   private static readonly assetsPath = path.join(__dirname, "../../assets");
-  private readonly fullPath;
-  private readonly thumbPath;
+  private readonly fullPath: string;
+  private readonly thumbPath: string;
+  private readonly width: number;
+  private readonly height: number;
 
-  constructor(imgName: string) {
+  constructor(imgName: string, width: number, height: number) {
     this.fullPath = path.join(
       ImageProcessor.assetsPath,
       "full",
-      imgName + ".jpg"
+      `${imgName}.jpg`
     );
     this.thumbPath = path.join(
       ImageProcessor.assetsPath,
       "thumb",
-      imgName + ".jpg"
+      `${imgName}${width}x${height}.jpg`
     );
+    this.width = width;
+    this.height = height;
   }
 
   async isCached(): Promise<boolean> {
@@ -28,9 +33,9 @@ export default class ImageProcessor {
     return fsPromises.readFile(this.thumbPath);
   }
 
-  async load(width: number, height: number): Promise<Buffer> {
+  async load(): Promise<Buffer> {
     return sharp(this.fullPath)
-      .resize(Number(width), Number(height))
+      .resize(this.width, this.height)
       .jpeg()
       .toBuffer();
   }
@@ -44,6 +49,10 @@ export default class ImageProcessor {
     }
 
     return fsPromises.writeFile(this.thumbPath, img);
+  }
+
+  async removeCache(): Promise<string[]> {
+    return del([this.thumbPath]);
   }
 
   private async exists(imgPath: string): Promise<boolean> {
